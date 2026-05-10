@@ -1,0 +1,113 @@
+// lib/models/country.dart
+
+class CurrencyInfo {
+  final String name;
+  final String symbol;
+
+  const CurrencyInfo({
+    required this.name,
+    required this.symbol,
+  });
+}
+
+class Country {
+  // Requirement: All model fields must be final and explicitly typed
+  final String name;
+  final String officialName;
+  final String flagPng;
+  final String flagSvg;
+  final String region;
+  final String subregion;
+  final List<String> capital;
+  final int population;
+  final double area;
+  final List<String> timezones;
+  final List<CurrencyInfo> currencies;
+  final List<String> languages;
+  final String alpha3Code;
+
+  const Country({
+    required this.name,
+    required this.officialName,
+    required this.flagPng,
+    required this.flagSvg,
+    required this.region,
+    required this.subregion,
+    required this.capital,
+    required this.population,
+    required this.area,
+    required this.timezones,
+    required this.currencies,
+    required this.languages,
+    required this.alpha3Code,
+  });
+
+  // Requirement: fromJson constructor present
+  factory Country.fromJson(Map<String, dynamic> json) {
+    final nameData = json['name'] as Map<String, dynamic>?;
+    final flagsData = json['flags'] as Map<String, dynamic>?;
+    
+    // Parse Currencies
+    final currenciesRaw = json['currencies'] as Map<String, dynamic>? ?? {};
+    final currenciesList = currenciesRaw.values.map((c) {
+      final data = c as Map<String, dynamic>;
+      return CurrencyInfo(
+        name: data['name'] as String? ?? '',
+        symbol: data['symbol'] as String? ?? '',
+      );
+    }).toList();
+
+    // Parse Languages
+    final languagesRaw = json['languages'] as Map<String, dynamic>? ?? {};
+    final languagesList = languagesRaw.values.cast<String>().toList();
+
+    return Country(
+      name: nameData?['common'] as String? ?? 'Unknown',
+      officialName: nameData?['official'] as String? ?? 'Unknown',
+      flagPng: flagsData?['png'] as String? ?? '',
+      flagSvg: flagsData?['svg'] as String? ?? '',
+      region: json['region'] as String? ?? 'N/A',
+      subregion: json['subregion'] as String? ?? 'N/A',
+      capital: (json['capital'] as List?)?.cast<String>() ?? [],
+      population: (json['population'] as num?)?.toInt() ?? 0,
+      area: (json['area'] as num?)?.toDouble() ?? 0.0,
+      timezones: (json['timezones'] as List?)?.cast<String>() ?? [],
+      currencies: currenciesList,
+      languages: languagesList,
+      alpha3Code: json['cca3'] as String? ?? '',
+    );
+  }
+
+  // Requirement: copyWith method present
+  Country copyWith({
+    String? name,
+    String? officialName,
+    String? flagPng,
+    String? flagSvg,
+    String? region,
+    String? subregion,
+    List<String>? capital,
+    int? population,
+    double? area,
+    List<String>? timezones,
+    List<CurrencyInfo>? currencies,
+    List<String>? languages,
+    String? alpha3Code,
+  }) {
+    return Country(
+      name: name ?? this.name,
+      officialName: officialName ?? this.officialName,
+      flagPng: flagPng ?? this.flagPng,
+      flagSvg: flagSvg ?? this.flagSvg,
+      region: region ?? this.region,
+      subregion: subregion ?? this.subregion,
+      capital: capital ?? this.capital,
+      population: population ?? this.population,
+      area: area ?? this.area,
+      timezones: timezones ?? this.timezones,
+      currencies: currencies ?? this.currencies,
+      languages: languages ?? this.languages,
+      alpha3Code: alpha3Code ?? this.alpha3Code,
+    );
+  }
+}
